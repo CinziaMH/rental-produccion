@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Rental · Ronda 5S</title>
+<style>
+:root{--nar:#2563EB;--bg:#0f172a;--panel:#1e293b;--line:#334155;--txt:#f1f5f9;--muted:#94a3b8;
+--verde:#22c55e;--azul:#3b82f6;--rojo:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;min-height:100vh}
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(90deg,var(--nar),#1e3a8a);flex-wrap:wrap}
+.hdr h1{font-size:17px;font-weight:800;letter-spacing:.4px}
+.hdr .sub{font-size:11px;opacity:.9;width:100%}
+.chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:9px;padding:4px 11px;font-weight:800;font-size:12px;text-decoration:none;color:#fff}
+.wrap{padding:14px;max-width:640px;margin:0 auto}
+.selsuc{display:flex;gap:12px;margin-top:30px}
+.selsuc a{flex:1;text-align:center;padding:34px 10px;border-radius:16px;font-size:20px;font-weight:800;text-decoration:none;color:#fff}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.card .tit{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.est{font-size:11px;font-weight:800;padding:3px 12px;border-radius:99px;color:#fff;margin-left:auto}
+.est.verde{background:var(--verde)}.est.azul{background:var(--azul)}.est.rojo{background:var(--rojo)}
+.est.pend{background:#475569}
+.meta{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.6}
+.thumb{margin-top:8px;max-width:100%;border-radius:10px;max-height:220px}
+.opsel{margin:6px 0 14px}
+.opsel .lbl{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
+.opsel .ops{display:flex;gap:8px;flex-wrap:wrap}
+.opbtn{border:1px solid var(--line);background:#0f172a;color:var(--txt);border-radius:10px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer}
+.opbtn.on{background:var(--nar);border-color:#7dd3fc}
+.btnfoto{display:block;width:100%;border:none;border-radius:11px;padding:14px 0;font-size:16px;font-weight:800;color:#fff;background:var(--nar);margin-top:10px;cursor:pointer}
+.sem{display:flex;gap:8px;margin-top:10px}
+.sem button{flex:1;border:2px solid transparent;border-radius:11px;padding:13px 0;font-size:14px;font-weight:800;color:#fff;cursor:pointer;opacity:.55}
+.sem button.on{opacity:1;border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
+.sem .bv{background:var(--verde)}.sem .ba{background:var(--azul)}.sem .br{background:var(--rojo)}
+.nota{width:100%;border-radius:10px;border:1px solid var(--line);background:#0f172a;color:var(--txt);padding:11px;font-size:14px;margin-top:10px}
+.enviar{display:block;width:100%;border:none;border-radius:11px;padding:15px 0;font-size:17px;font-weight:800;color:#fff;background:#16a34a;margin-top:10px;cursor:pointer}
+.enviar:disabled{background:#334155;color:#94a3b8}
+.stx{font-size:13px;font-weight:800;margin-top:8px;min-height:18px}
+.done{background:#14532d;border:1px solid #22c55e;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:800;margin-top:10px}
+.spin{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--nar);border-radius:50%;animation:rot 1s linear infinite;margin:50px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+.resumen{display:flex;gap:8px;margin-bottom:14px}
+.resumen .r{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;text-align:center;padding:10px 4px}
+.resumen .r b{display:block;font-size:22px}
+.resumen .r span{font-size:10px;color:var(--muted);font-weight:800}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1 id="h1t">RENTAL · RONDA 5S</h1>
+  <a class="chip" href="inicio.html" style="margin-left:auto">🏠 Inicio</a>
+  <a class="chip" href="./">⏱ Hora x Hora</a>
+  <div class="sub" id="sub">—</div>
+</div>
+<div class="wrap" id="app"><div class="spin"></div></div>
+<script>
+var URL_BASE='https://script.google.com/macros/s/AKfycbyWf_EHWZqneVCM9Nn9xJWUBSbLKO6LNzLqk8HRMfQsz6HKduyKFvht5SY0RLgZFRed/exec';
+var NOMS={BSAS:'Sucursal Buenos Aires',CBA:'Sucursal Córdoba'};
+var SUC=((location.search.match(/[?&]sucursal=([A-Za-z0-9]+)/)||[])[1]||'').toUpperCase();
+var EST=null, SEL={}; // SEL[punto_id]={b64,estado,nota}
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
+function hoy(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+if(!SUC){
+  document.getElementById('sub').textContent='Elegí la sucursal';
+  document.getElementById('app').innerHTML='<div class="selsuc">'
+    +'<a href="?sucursal=BSAS" style="background:#2563eb">BSAS<br><span style="font-size:12px;font-weight:600">Buenos Aires</span></a>'
+    +'<a href="?sucursal=CBA" style="background:#16a34a">CBA<br><span style="font-size:12px;font-weight:600">Córdoba</span></a></div>';
+}else{
+  document.getElementById('h1t').textContent='RENTAL · RONDA 5S · '+SUC;
+  cargar();
+}
+function cargar(){
+  fetch(URL_BASE+'?view=5s&sucursal='+SUC+'&t='+Date.now(),{cache:'no-store',redirect:'follow'})
+  .then(function(r){return r.json()}).then(function(D){
+    if(!D.ok) throw new Error(D.error||'error');
+    EST=D; render();
+  }).catch(function(e){
+    document.getElementById('app').innerHTML='<div class="card" style="border-color:#ef4444"><b>No se pudo cargar.</b><div class="meta">'+esc(e)+'</div><button class="btnfoto" onclick="cargar()">↻ Reintentar</button></div>';
+  });
+}
+function opSel(){try{return localStorage.getItem('r5s_op_'+SUC)||''}catch(e){return ''}}
+function setOp(n){try{localStorage.setItem('r5s_op_'+SUC,n)}catch(e){} render();}
+function render(){
+  var D=EST;
+  document.getElementById('sub').textContent=(NOMS[SUC]||SUC)+' · '+D.fecha+' · calificación del operario (verde / azul / rojo) + foto';
+  var hechos=D.puntos.filter(function(p){return p.estado&&p.estado!=='pendiente'}).length;
+  var op=opSel();
+  var h='';
+  h+='<div class="resumen"><div class="r"><b>'+D.puntos.length+'</b><span>PUNTOS</span></div>'
+    +'<div class="r"><b style="color:'+(hechos===D.puntos.length?'#22c55e':'#f59e0b')+'">'+hechos+'</b><span>HECHOS HOY</span></div>'
+    +'<div class="r"><b style="color:'+(hechos===D.puntos.length?'#22c55e':'#94a3b8')+'">'+(hechos===D.puntos.length?'✓':'—')+'</b><span>RONDA COMPLETA</span></div></div>';
+  h+='<div class="opsel"><div class="lbl">👷 ¿QUIÉN HACE LA RONDA?</div><div class="ops">';
+  (D.operarios||[]).forEach(function(o){h+='<button class="opbtn'+(op===o?' on':'')+'" onclick="setOp(\''+esc(o).replace(/'/g,"\\'")+'\')">'+esc(o)+'</button>'});
+  h+='</div></div>';
+  D.puntos.forEach(function(p){
+    var s=SEL[p.id]||{};
+    var done=p.estado&&p.estado!=='pendiente';
+    var cls=done?(p.estado==='verde'?'verde':(p.estado==='azul'?'azul':'rojo')):'pend';
+    h+='<div class="card"><div class="tit">📍 '+esc(p.nombre)+'<span class="est '+cls+'">'+(done?p.estado.toUpperCase():'PENDIENTE')+'</span></div>';
+    if(done){
+      h+='<div class="meta">✓ Hecho hoy '+esc(p.hora)+' por '+esc(p.operario)+(p.comentario?'<br>📝 '+esc(p.comentario):'')+'</div>';
+      if(p.foto_url) h+='<img class="thumb" src="'+esc(p.foto_url)+'" loading="lazy">';
+      h+='<div class="meta" style="margin-top:8px">¿Corregiste algo? Podés volver a cargarlo:</div>';
+    }
+    h+='<input type="file" accept="image/*" capture="environment" id="f_'+p.id+'" style="display:none" onchange="foto(\''+p.id+'\',this)">';
+    h+='<button class="btnfoto" onclick="document.getElementById(\'f_'+p.id+'\').click()">📷 '+(s.b64?'Cambiar foto':'Sacar foto')+'</button>';
+    if(s.b64) h+='<img class="thumb" src="data:image/jpeg;base64,'+s.b64+'">';
+    h+='<div class="sem">'
+      +'<button class="bv'+(s.estado==='verde'?' on':'')+'" onclick="sem(\''+p.id+'\',\'verde\')">🟢 VERDE<br><span style="font-size:10px;font-weight:600">impecable</span></button>'
+      +'<button class="ba'+(s.estado==='azul'?' on':'')+'" onclick="sem(\''+p.id+'\',\'azul\')">🔵 AZUL<br><span style="font-size:10px;font-weight:600">observaciones</span></button>'
+      +'<button class="br'+(s.estado==='rojo'?' on':'')+'" onclick="sem(\''+p.id+'\',\'rojo\')">🔴 ROJO<br><span style="font-size:10px;font-weight:600">mal</span></button></div>';
+    h+='<input class="nota" id="n_'+p.id+'" placeholder="Nota / qué hay que corregir (opcional)" value="'+esc(s.nota||'')+'">';
+    h+='<button class="enviar" id="e_'+p.id+'" onclick="enviar(\''+p.id+'\')" '+((s.b64&&s.estado)?'':'disabled')+'>✔ Guardar punto</button>';
+    h+='<div class="stx" id="s_'+p.id+'"></div></div>';
+  });
+  document.getElementById('app').innerHTML=h;
+}
+function sem(id,e){ SEL[id]=SEL[id]||{}; SEL[id].estado=e; SEL[id].nota=(document.getElementById('n_'+id)||{}).value||SEL[id].nota; render(); }
+function foto(id,inp){
+  var file=inp.files&&inp.files[0]; if(!file) return;
+  var img=new Image(), rd=new FileReader();
+  rd.onload=function(){ img.onload=function(){
+    var MAX=1280, w=img.width, hh=img.height;
+    if(w>MAX){hh=Math.round(hh*MAX/w);w=MAX} if(hh>MAX){w=Math.round(w*MAX/hh);hh=MAX}
+    var c=document.createElement('canvas'); c.width=w; c.height=hh;
+    c.getContext('2d').drawImage(img,0,0,w,hh);
+    var b64=c.toDataURL('image/jpeg',0.72).split(',')[1];
+    SEL[id]=SEL[id]||{}; SEL[id].b64=b64; SEL[id].nota=(document.getElementById('n_'+id)||{}).value||SEL[id].nota;
+    render();
+  }; img.src=rd.result; };
+  rd.readAsDataURL(file);
+}
+function enviar(id){
+  var s=SEL[id]||{}, st=document.getElementById('s_'+id), btn=document.getElementById('e_'+id);
+  var op=opSel();
+  if(!op){st.textContent='⚠ Elegí quién hace la ronda (arriba)';st.style.color='#ef4444';return}
+  if(!s.b64){st.textContent='⚠ Falta la foto';st.style.color='#ef4444';return}
+  if(!s.estado){st.textContent='⚠ Elegí verde / azul / rojo';st.style.color='#ef4444';return}
+  var p=EST.puntos.filter(function(x){return x.id===id})[0]||{};
+  var nota=(document.getElementById('n_'+id)||{}).value||'';
+  btn.disabled=true; st.textContent='guardando… (sube la foto, puede tardar)'; st.style.color='#94a3b8';
+  fetch(URL_BASE,{method:'POST',redirect:'follow',body:JSON.stringify({tipo:'5s',sucursal:SUC,punto_id:id,punto_nombre:p.nombre||id,operario:op,manual_estado:s.estado,nota:nota,foto_b64:s.b64})})
+  .then(function(r){return r.json()}).then(function(j){
+    if(!j.ok) throw new Error(j.error||'error');
+    st.textContent='✓ Guardado: '+String(j.estado).toUpperCase(); st.style.color='#22c55e';
+    delete SEL[id];
+    setTimeout(cargar,800);
+  }).catch(function(e){ btn.disabled=false; st.textContent='Error: '+e; st.style.color='#ef4444'; });
+}
+</script>
+</body>
+</html>
