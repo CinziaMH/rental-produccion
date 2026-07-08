@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rental · Pie de Línea</title>
+<style>
+:root{--nar:#2563EB;--bg:#0f172a;--panel:#1e293b;--line:#334155;--txt:#f1f5f9;--muted:#94a3b8;
+--verde:#22c55e;--azul:#3b82f6;--rojo:#ef4444;--gris:#475569}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;min-height:100vh;display:flex;flex-direction:column}
+.hdr{display:flex;align-items:center;gap:12px;padding:10px 18px;background:linear-gradient(90deg,var(--nar),#1e3a8a);flex-wrap:wrap;flex:0 0 auto}
+.hdr h1{font-size:19px;font-weight:800;letter-spacing:.5px}
+.reloj{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.sub{font-size:11px;opacity:.9}
+.chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:9px;padding:4px 11px;font-weight:800;font-size:12px;text-decoration:none;color:#fff;cursor:pointer;white-space:nowrap}
+.off{background:var(--rojo);color:#fff;padding:6px 14px;font-weight:800;font-size:13px;display:none;text-align:center}
+.wrap{flex:1;overflow:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));gap:16px;align-content:start}
+@media(max-width:560px){.wrap{grid-template-columns:1fr;padding:10px}}
+.suc{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.suc .top{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:2px solid var(--line);flex-wrap:wrap}
+.suc .pill{color:#fff;font-weight:800;font-size:16px;padding:4px 16px;border-radius:10px}
+.suc .nom{font-weight:800;font-size:17px}
+.kpis{display:flex;gap:12px;padding:14px 16px;flex-wrap:wrap}
+.kpi{flex:1;min-width:130px;background:#0f172a;border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:center}
+.kpi .v{font-size:34px;font-weight:800;line-height:1.1}
+.kpi .l{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-top:4px}
+.kpi .d{font-size:11px;color:var(--muted);margin-top:3px}
+.dots{display:flex;gap:14px;justify-content:center;align-items:center;min-height:41px;flex-wrap:wrap}
+.dot{width:34px;height:34px;border-radius:50%;display:inline-block;box-shadow:0 0 8px rgba(0,0,0,.5);position:relative}
+.dot.verde{background:var(--verde)}.dot.azul{background:var(--azul)}
+.dot.rojo{background:var(--rojo);animation:pulse 1.2s infinite}
+.dot.gris{background:var(--gris);border:2px dashed #64748b}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}50%{box-shadow:0 0 0 9px rgba(239,68,68,0)}}
+.dotlbl{font-size:9px;font-weight:800;color:var(--muted);text-align:center;max-width:78px;line-height:1.2}
+.dwrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.v.g{color:var(--verde)}.v.w{color:#f97316}.v.r{color:var(--rojo)}.v.m{color:var(--muted)}
+.aus{padding:0 16px 6px;font-size:13px;font-weight:700;color:#fecaca;display:none}
+.sec{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;padding:8px 16px 4px}
+.ordenes{padding:0 12px 14px;display:flex;flex-direction:column;gap:10px}
+.mo{background:#141f35;border:1px solid #263a5c;border-radius:12px;padding:11px 14px}
+.mo .l1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mo .num{font-size:17px;font-weight:800}
+.mo .hoy{font-size:12px;color:var(--muted);font-weight:700;margin-left:auto}
+.cur{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#0ea5e9,#0369a1);color:#fff;border-radius:8px;padding:2px 10px;font-size:12px;font-weight:800;outline:2px solid #7dd3fc}
+.cur::before{content:'';width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1.1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.wo{display:inline-block;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:1px 8px;margin:3px 4px 0 0;font-size:11px;font-weight:700;color:#cbd5e1}
+.mo .pend{font-size:11px;color:var(--muted);margin-top:6px}
+.vacio{padding:18px;text-align:center;color:var(--muted);font-weight:700}
+.spin{width:36px;height:36px;border:4px solid var(--line);border-top-color:var(--nar);border-radius:50%;animation:rot 1s linear infinite;margin:60px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>RENTAL · PIE DE LÍNEA</h1>
+  <div><div class="reloj" id="reloj">--:--</div><div class="sub" id="sub">cargando…</div></div>
+  <a class="chip" href="inicio.html" style="margin-left:auto">🏠 Inicio</a>
+  <a class="chip" href="./">⏱ Hora x Hora</a>
+  <span class="chip" onclick="cargar()">↻ Actualizar</span>
+</div>
+<div class="off" id="off">⚠ SIN CONEXIÓN — mostrando últimos datos</div>
+<div class="wrap" id="wrap"><div class="spin"></div></div>
+<script>
+var URL_BASE='https://script.google.com/macros/s/AKfycbyWf_EHWZqneVCM9Nn9xJWUBSbLKO6LNzLqk8HRMfQsz6HKduyKFvht5SY0RLgZFRed/exec';
+var COLORS={BSAS:'#2563eb',CBA:'#16a34a'};
+var NOMS={BSAS:'Sucursal Buenos Aires',CBA:'Sucursal Córdoba'};
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
+function hN(v){return Math.round(v*10)/10}
+function efCls(ef){return ef==null?'m':(ef>=100?'g':(ef>=80?'w':'r'))}
+function render(D){
+  document.getElementById('reloj').textContent=D.hora;
+  document.getElementById('sub').textContent=D.fecha+' · estado al pie de línea por sucursal · refresca cada 1 min';
+  var h='';
+  (D.sucursales||[]).forEach(function(s){
+    var col=COLORS[s.code]||'#666';
+    // 5S: una pelotita por punto de control (gris = todavía sin ronda hoy)
+    var dots=(s.s5||[]).map(function(p){
+      var cls=p.estado==='verde'?'verde':(p.estado==='azul'?'azul':(p.estado==='rojo'?'rojo':'gris'));
+      return '<div class="dwrap"><span class="dot '+cls+'" title="'+esc(p.nombre)+': '+esc(p.estado||'sin ronda hoy')+'"></span><span class="dotlbl">'+esc(p.nombre.replace(/^5S /,''))+'</span></div>';
+    }).join('')||'<span class="v m" style="font-size:13px">sin puntos</span>';
+    var ausP=s.total_operarios>0?Math.round(s.ausentes.length*100/s.total_operarios):0;
+    var efc=efCls(s.ef);
+    h+='<div class="suc" style="border-top:6px solid '+col+'">'
+      +'<div class="top"><span class="pill" style="background:'+col+'">'+esc(s.code)+'</span><span class="nom">'+esc(NOMS[s.code]||s.code)+'</span></div>'
+      +'<div class="kpis">'
+      +'<div class="kpi"><div class="v '+efc+'">'+(s.ef!=null?s.ef+'%':'—')+'</div><div class="l">EFICIENCIA DEL DÍA</div><div class="d">'+(s.ef!=null?('estándar '+hN(s.obj_min/60)+' h / real '+hN(s.real_min/60)+' h'):'sin tareas medibles')+'</div></div>'
+      +'<div class="kpi"><div class="dots">'+dots+'</div><div class="l">5S DE HOY</div></div>'
+      +'<div class="kpi"><div class="v '+(s.ausentes.length?'r':'g')+'">'+(s.ausentes.length?ausP+'%':'0%')+'</div><div class="l">AUSENTISMO</div><div class="d">'+(s.ausentes.length?esc(s.ausentes.join(' · ')):'todos con registro')+'</div></div>'
+      +'</div>';
+    h+='<div class="sec">ÓRDENES EN PROCESO HOY · '+(s.ordenes||[]).length+'</div><div class="ordenes">';
+    if(!(s.ordenes||[]).length){ h+='<div class="vacio">Sin órdenes trabajadas hoy'+(s.presentes.length?'':' · sin registro de operarios')+'</div>'; }
+    (s.ordenes||[]).forEach(function(m){
+      h+='<div class="mo"><div class="l1"><span class="num">'+esc(m.mo)+'</span>';
+      (m.en_curso||[]).forEach(function(c){h+='<span class="cur">'+esc(c.op.split(' ')[0])+' · '+esc(c.wo)+'</span>'});
+      h+='<span class="hoy">'+hN((m.min_hoy||0)/60)+' h hoy</span></div>';
+      if((m.pendientes||[]).length){
+        h+='<div class="pend">PENDIENTE ('+hN((m.pend_total_min||0)/60)+' h): '
+          +(m.pendientes||[]).map(function(p){return '<span class="wo">'+esc(p.wo)+' · '+p.min+'m</span>'}).join('')
+          +(m.pend_mas>0?'<span class="wo">+'+m.pend_mas+' más</span>':'')+'</div>';
+      }else{
+        h+='<div class="pend" style="color:#4ade80;font-weight:800">✓ Sin operaciones pendientes</div>';
+      }
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  document.getElementById('wrap').innerHTML=h;
+}
+function cargar(){
+  fetch(URL_BASE+'?view=pie&t='+Date.now(),{cache:'no-store',redirect:'follow'})
+  .then(function(r){return r.json()}).then(function(D){
+    if(!D.ok) throw new Error(D.error||'error');
+    document.getElementById('off').style.display='none';
+    try{localStorage.setItem('rpie_last',JSON.stringify(D))}catch(e){}
+    render(D);
+  }).catch(function(e){
+    document.getElementById('off').style.display='block';
+    try{var u=localStorage.getItem('rpie_last'); if(u) render(JSON.parse(u));}catch(e2){}
+  });
+}
+cargar();
+setInterval(cargar,60000);
+</script>
+</body>
+</html>
